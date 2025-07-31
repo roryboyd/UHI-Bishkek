@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 # Import necessary libraries
 import ee
 import geemap
@@ -17,7 +14,7 @@ ee.Initialize()
 
 # AOI
 
-# Load the GeoJSON file as a GeoDataFrame
+# Load the AOI GeoJSON file as a GeoDataFrame
 geojson_url = 'https://drive.google.com/uc?id=1O9nrrGjMIX3naiHPnsmXS2X-QWQfWdIu'
 gdf = gpd.read_file(geojson_url)
 
@@ -30,7 +27,7 @@ aoi = geemap.geopandas_to_ee(gdf)
 def mask_cloud_s2_harmonized(image):
     # Sentinel-2 QA60 band: clouds and cirrus
     qa = image.select('QA60')
-    cloud_mask = qa.bitwiseAnd(1 << 10).eq(0).And(qa.bitwiseAnd(1 << 11).eq(0))  # Mask clouds and cirrus
+    cloud_mask = qa.bitwiseAnd(1 << 10).eq(0).And(qa.bitwiseAnd(1 << 11).eq(0))  # Mask clouds
     return image.updateMask(cloud_mask).divide(10000).select(
         ['B4', 'B8', 'B11'],  # Red, NIR, SWIR bands
         ['B4', 'B8', 'B11']   # Rename bands for consistency
